@@ -8,7 +8,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Espetaria Monzani</title>
         <style>
-            button  { margin : 10px; width: 250px;}
+            button  { margin : 20px; width: 250px;}
+
+            .button-container {
+                text-align: center; /* Alinha os botões no centro da tela */
+            }
+    
         </style>
         <script>
             document.addEventListener('keydown', function(event) {
@@ -20,11 +25,13 @@
     </head>
 </head>
 <body>
-    <h1>Espetaria MM</h1>
+    <div class = "button-container">
+    <h1>Espetaria Monzani</h1>
 
-    <form id = 'form2' method="post" action="{% url 'mesas' %}">
+    <form id = 'form2' method="get" action="{% url 'mesas' %}">
         {% csrf_token %}
         <button class="btn btn-primary btn-lg" type="submit">Mesas (F2)</button>
     </form>
+</div>
 </body>
 </html>

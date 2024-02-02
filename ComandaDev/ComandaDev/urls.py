@@ -22,6 +22,5 @@ urlpatterns = [
     path('mesas', views.mesas, name="mesas"),
     path('itens', views.itens, name="itens"),
     path('categoria', views.categoria, name="categoria"),
-    path('criamesa', views.criamesa, name="criamesa"),
     path('itensmesa', views.itensmesa, name="itensmesa")
 ]
