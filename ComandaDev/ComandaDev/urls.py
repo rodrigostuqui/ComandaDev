@@ -22,5 +22,7 @@ urlpatterns = [
     path('mesas', views.mesas, name="mesas"),
     path('itens', views.itens, name="itens"),
     path('categoria', views.categoria, name="categoria"),
-    path('itensmesa', views.itensmesa, name="itensmesa")
+    path('itensmesa', views.itensmesa, name="itensmesa"),
+    path('finalizar_venda', views.finalizar_venda, name="finalizar_venda"),
+    path('salvar_venda', views.salvar_venda, name="salvar_venda"),
 ]

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -20,23 +20,7 @@
                 text-decoration: none;
                 border: 1px solid #ccc;
             }
-            .modal {
-                display: none;
-                position: fixed;
-                z-index: 1;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-                width: 400 px; /* Defina o tamanho desejado */
-            }
-    
-            .modal-content {
-                background-color: #fefefe;
-                margin: 15% auto;
-                padding: 20px;
-                border: 1px solid #888;
-                width: 80%;
-            }
+            
         </style>
         <title>Espetaria Monzani</title>
         <script>
@@ -75,7 +59,7 @@
         {% for mesa in mesas %}
             <form action="{% url 'itensmesa' %}" method="post" class="mesa-button">
                 {% csrf_token %}
-                <button id = "mesa" type="submit" class="btn btn-dark" name="mesa_id" value="{{ mesa.id }}">{{ mesa.mesa }}</button>
+                <button id = "mesa" type="submit" class="btn btn-dark" name="mesa_id" value="{{ mesa.mesa }}">{{ mesa.mesa }}</button>
             </form>
         {% endfor %}
 
@@ -90,16 +74,29 @@
         </form>
     </div>
 
-    <div id="meuModal" class="modal">
-        <div class="modal-content">
-            <span onclick="fecharModal()" style="cursor: pointer; float: right;">&times;</span>
-            <form method="post" action="{% url 'mesas' %}">
+    <div id="meuModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Nome da mesa</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="fecharModal()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="container mt-3">
+                <form method="post" action="{% url 'mesas' %}">
                 {% csrf_token %}
-                <label for="texto">Digite a mesa:</label>
-                <input type="text" id="texto" name="mesa_nome" required>
-                <button type="submit">Enviar</button>
-            </form>
+                  <div class="mb-3">
+                    <input type="text" class="form-control" id="texto" placeholder="Digite aqui" name="mesa_nome" required>
+                  </div>
+                  <div class="mb-3">
+                  <button type="submit" class="btn btn-primary">Enviar</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="fecharModal()">Close</button>
+                </div>
+                </form>
+              </div>
+          </div>
         </div>
-    </div>
+      </div>
 </body>
 </html>

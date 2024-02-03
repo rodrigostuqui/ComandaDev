@@ -1,18 +1,19 @@
 from django.db import models
 
 class Mesa(models.Model):
-    mesa = models.CharField(max_length = 100)
-    
+    mesa = models.CharField(max_length = 100, primary_key = True)
+    total_valor = models.DecimalField(max_digits=10, decimal_places=3, default = 0)
+    valor_recebido = models.DecimalField(max_digits=10, decimal_places=3, default = 0)
     def __str__(self):
-        return self.nome
+        return self.mesa
 
 class Vendas(models.Model):
     codigo = models.IntegerField()
     mesa = models.CharField(max_length=100)   
     nome = models.CharField(max_length=100)
     categoria = models.CharField(max_length=100)
-    valor = models.DecimalField(max_digits=10, decimal_places=3)
     quantidade = models.DecimalField(max_digits=10, decimal_places=3)
+    valor = models.DecimalField(max_digits=10, decimal_places=3)
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=100)
