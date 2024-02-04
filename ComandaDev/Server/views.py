@@ -25,7 +25,7 @@ def itensmesa(request):
         mesa = request.POST.get('mesa_id', False)
         dados_venda = Vendas.objects.filter(mesa=mesa)
         mesa = Mesa.objects.filter(mesa=mesa)
-    return render(request, 'itensmesa.html', {'mesa' : mesa[0].mesa, 'itens': Itens.objects.all(), 'vendas' : dados_venda, 'total' : mesa[0].total_valor, 'recebido': mesa[0].valor_recebido})
+    return render(request, 'itensmesa.html', {'mesa' : mesa[0].mesa, 'itens': Itens.objects.all().order_by('id'), 'vendas' : dados_venda, 'total' : mesa[0].total_valor, 'recebido': mesa[0].valor_recebido})
 
 
 def finalizar_venda(request):
@@ -63,4 +63,4 @@ def salvar_venda(request):
         total = total + float(str(x.valor))
     mesa = Mesa.objects.filter(mesa=mesa)
     mesa.update(total_valor=total)
-    return render(request, 'itensmesa.html', {'mesa' : mesa[0].mesa, 'itens': Itens.objects.all(), 'vendas' : dados_venda, 'total' : mesa[0].total_valor})
+    return render(request, 'itensmesa.html', {'mesa' : mesa[0].mesa, 'itens': Itens.objects.all().order_by('id'), 'vendas' : dados_venda, 'total' : mesa[0].total_valor})
