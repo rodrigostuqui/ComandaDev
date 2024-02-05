@@ -44,8 +44,8 @@ def salvar_venda(request):
     quantidade = request.POST.get('quantidade', False)
     mesa = request.POST.get('mesa_id', False)
     it = Itens.objects.filter(id=codigo_item)
-    if(len(Vendas.objects.filter(codigo=codigo_item)) != 0):
-        venda = Vendas.objects.filter(codigo=codigo_item)
+    if(len(Vendas.objects.filter(codigo=codigo_item, mesa=mesa)) != 0):
+        venda = Vendas.objects.filter(codigo=codigo_item, mesa=mesa)
         venda.update(quantidade=float(str(venda[0].quantidade))+float(quantidade))
         venda.update(valor=float(str(venda[0].valor))+float(quantidade)*float(str(it[0].valor)))
     else:
