@@ -96,6 +96,7 @@
             <table class="table table-bordered table-striped">
                 <thead class="thead-dark">
                     <tr>
+                        <th></th>
                         <th>Nome</th>
                         <th>Quantidade</th>
                         <th>Valor</th>
@@ -105,6 +106,22 @@
                 <tbody>
                     {% for item in vendas %}
                         <tr>
+                            <td>
+                                <form class = "mesa-button" action="{% url 'atualiza_quantidade' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="mesa_id" value="{{mesa}}">
+                                    <input type="hidden" name="quantidade" value="-1">
+                                    <input type="hidden" name="codigo_item" value="{{item.codigo}}">
+                                    <button type="submit" class="btn btn-danger">Excluir 1</button>
+                                </form>
+                                <form class = "mesa-button" action="{% url 'atualiza_quantidade' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="mesa_id" value="{{mesa}}">
+                                    <input type="hidden" name="quantidade" value="1">
+                                    <input type="hidden" name="codigo_item" value="{{item.codigo}}">
+                                    <button type="submit" class="btn btn-success">Adicionar 1</button>
+                                </form>
+                        </td>
                             <td>{{ item.nome }}</td>
                             <td>{{ item.quantidade }}</td>
                             <td>{{ item.valor }}</td>
@@ -112,12 +129,12 @@
                         </tr>
                     {% endfor %}
                     <tr class="table-info">
-                        <td colspan="2">Recebido</td>
+                        <td colspan="3">Recebido</td>
                         <td>{{ recebido }}</td>
                         <!-- Add more columns as needed -->
                     </tr>
                     <tr class="table-info">
-                        <td colspan="2">Total</td>
+                        <td colspan="3">Total</td>
                         <td>{{ total }}</td>
                         <!-- Add more columns as needed -->
                     </tr>
@@ -176,7 +193,7 @@
                     </button>
                 </div>
                 <div class="container mt-3">
-                    <form method="post" action="{% url 'salvar_venda' %}">
+                    <form method="post" action="{% url 'atualiza_quantidade' %}">
 
                     <input type="hidden" name = "mesa_id" value="{{ mesa }}"/>
                     {% csrf_token %}
