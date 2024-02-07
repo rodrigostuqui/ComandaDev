@@ -11,6 +11,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
+            .center-text {
+                text-align: center;
+            }
             #inicial { margin : 10px; width: 250px;}
             #mesa {margin : 10px; height: 50px;}
             .button-container {
@@ -31,7 +34,10 @@
                 if (event.key === 'F2') {
                     pagModal(event);
                 } else if (event.key === 'F3') {
-                    mostrarModal(event)
+                    mostrarModal(event);
+                }
+                else if (event.key === 'F4') {
+                    printText();
                 }
         });
         </script>
@@ -66,6 +72,48 @@
             
           </script>
 
+          <script>
+
+            function truncateAndCenter(text, width) {
+                if (text.length > width) {
+                    text = text.substring(0, width - 3) + '...';
+                } else {
+                    var padding = ' '.repeat((width - text.length) / 2);
+                    text = padding + text + padding;
+                    if (text.length < width) {
+                        text += ' ';
+                    }
+                }
+                return text;
+            }
+
+            function printText() {
+                var separa = "--------------------------------------\n"
+                var textToPrint = "Espetaria Monzani\n";
+                textToPrint += separa;
+                textToPrint += "Mesa "
+                {% for item in mesa %}
+                    textToPrint += "{{ item.mesa }}\n";  // Supondo que você queira imprimir os campos 'campo1' e 'campo2'
+                {% endfor %}
+
+                {% for item in vendas %}
+                    textToPrint += "{{ item.quantidade }} - {{ item.nome }}   {{item.valor}}\n";  // Supondo que você queira imprimir os campos 'campo1' e 'campo2'
+                {% endfor %}
+    
+                var printWindow = window.open('', '_blank');
+                printWindow.document.write('<pre class="button-container">' + textToPrint + '</pre>');
+                printWindow.print();
+                printWindow.document.close();
+
+                if (printWindow) {
+                    printWindow.onafterprint = function() {
+                        printWindow.close();
+                    };
+                }
+            }
+            </script>
+    
+
         <script>
 
             function pagModal() {
@@ -92,7 +140,9 @@
 </head>
 <body>
     <div class="button-container">
-    <h1>{{mesa}}</h1>
+    <h1>
+        {{mesa.0.mesa}}
+    </h1>
             <table class="table table-bordered table-striped">
                 <thead class="thead-dark">
                     <tr>
@@ -109,14 +159,14 @@
                             <td>
                                 <form class = "mesa-button" action="{% url 'atualiza_quantidade' %}" method="post">
                                     {% csrf_token %}
-                                    <input type="hidden" name="mesa_id" value="{{mesa}}">
+                                    <input type="hidden" name="mesa_id" value="{{mesa.0.mesa}}">
                                     <input type="hidden" name="quantidade" value="-1">
                                     <input type="hidden" name="codigo_item" value="{{item.codigo}}">
                                     <button type="submit" class="btn btn-danger">Excluir 1</button>
                                 </form>
                                 <form class = "mesa-button" action="{% url 'atualiza_quantidade' %}" method="post">
                                     {% csrf_token %}
-                                    <input type="hidden" name="mesa_id" value="{{mesa}}">
+                                    <input type="hidden" name="mesa_id" value="{{mesa.0.mesa}}">
                                     <input type="hidden" name="quantidade" value="1">
                                     <input type="hidden" name="codigo_item" value="{{item.codigo}}">
                                     <button type="submit" class="btn btn-success">Adicionar 1</button>
@@ -130,12 +180,14 @@
                     {% endfor %}
                     <tr class="table-info">
                         <td colspan="3">Recebido</td>
-                        <td>{{ recebido }}</td>
+                        <td>
+                        {{mesa.0.valor_recebido}}
+                    </td>
                         <!-- Add more columns as needed -->
                     </tr>
                     <tr class="table-info">
                         <td colspan="3">Total</td>
-                        <td>{{ total }}</td>
+                        <td>{{mesa.0.total_valor}}</td>
                         <!-- Add more columns as needed -->
                     </tr>
                 </tbody>
@@ -149,11 +201,14 @@
             {% csrf_token %}
             <button id = "inicial" class="btn btn-primary btn-sm" type="submit">Pagamento (F2)</button>
         </form>
-
+        <div class = "mesa-button">
+        <button class = "btn btn-primary btn-sm" id='imprime'  onclick="printText()">Imprimir Venda(F4)</button>
+        </div>
         <form class = "mesa-button" id = 'form3' method="get" action="{% url 'mesas' %}">
             {% csrf_token %}
             <button id = "inicial" class="btn btn-primary btn-sm" type="submit">Voltar</button>
         </form>
+        
     </div>
 
     <div id="pagModal" class="modal" tabindex="-1" role="dialog">
@@ -168,10 +223,10 @@
                 <div class="container mt-3">
                     <form method="post" action="{% url 'finalizar_venda' %}">
 
-                    <input type="hidden" name = "mesa_id" value="{{ mesa }}"/>
+                    <input type="hidden" name = "mesa_id" value="{{ mesa.0.mesa }}"/>
                     {% csrf_token %}
                     <div class="mb-3">
-                        <input type="text" class="form-control" id="text_quant" value = {{total}} name="recebido" required>
+                        <input type="text" class="form-control" id="text_quant" value = {{mesa.0.total_valor}} name="quantidade" required>
                     </div>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary">Enviar</button>
@@ -195,7 +250,7 @@
                 <div class="container mt-3">
                     <form method="post" action="{% url 'atualiza_quantidade' %}">
 
-                    <input type="hidden" name = "mesa_id" value="{{ mesa }}"/>
+                    <input type="hidden" name = "mesa_id" value="{{ mesa.0.mesa }}"/>
                     {% csrf_token %}
                     <div class="mb-3">
                         <select class = "form-control" id="item-id", onkeydown="mudarFoco(event)" name="codigo_item", "value" = "">  

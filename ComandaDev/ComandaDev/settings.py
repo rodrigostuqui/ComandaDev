@@ -25,8 +25,8 @@ SECRET_KEY = 'django-insecure-83+ay7d%%@xk@0r^ud7)nx51r7e&hx)wzl-$98*p3e47@9&3b5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['sheepdog-bright-overly.ngrok-free.app', 'localhost']
-CSRF_TRUSTED_ORIGINS = ['https://sheepdog-bright-overly.ngrok-free.app']
+ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['http://0.0.0.0']
 
 # Application definition
 
