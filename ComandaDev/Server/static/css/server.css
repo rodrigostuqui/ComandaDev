@@ -1,0 +1,25 @@
+#inicial { 
+    margin : 10px; 
+    width: 250px;
+}
+
+#mesa {
+    margin : 10px; 
+    height: 50px;
+}
+
+.button-container {
+    text-align: center; /* Alinha os botões no centro da tela */
+}
+
+.mesa-button {
+    display: inline-block;
+    padding: 5px; /* Ajuste o valor conforme necessário para dar espaço suficiente ao redor do texto */
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid #ccc;
+}
+
+select:focus {
+    outline: none;
+  }

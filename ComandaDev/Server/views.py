@@ -41,7 +41,8 @@ def finalizar_venda(request):
     if (float(str(mesa[0].total_valor)) == 0):
         Vendas.objects.filter(mesa=mesa[0].mesa).delete()
         mesa.delete()
-    return redirect('mesas')
+        return redirect('mesas')
+    return redirect(f'itensmesa/?mesa_id={mesa[0].mesa}')
 
 def atualiza_quantidade(request):
     codigo_item = request.POST.get('codigo_item', False)
