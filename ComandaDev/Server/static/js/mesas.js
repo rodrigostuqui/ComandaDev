@@ -18,7 +18,6 @@ $(document).ready(function () {
         updateMesaList(data.mesas);
     };
 });
-
 function updateMesaList(data) {
     var mesaList = $('#mesa-list');
     mesaList.empty();
