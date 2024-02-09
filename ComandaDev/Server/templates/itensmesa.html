@@ -2,11 +2,12 @@
 <html lang="pt-br">
 <head>
     <head>
+        {% load static %}
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-        
+        <script src="{% static "js/itens.js" %}"></script>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,62 +31,7 @@
         </style>
         <title>Espetaria Monzani</title>
         <script>
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'F2') {
-                    pagModal(event);
-                } else if (event.key === 'F3') {
-                    mostrarModal(event);
-                }
-                else if (event.key === 'F4') {
-                    printText();
-                }
-        });
-        </script>
-
-        <script>
-
-            function mostrarModal() {
-                event.preventDefault();
-                $("#item-id").select2();
-                document.getElementById('meuModal').style.display = 'block';
-                $("#item-id").select2('open');
-                document.addEventListener('keydown', fecharComEsc);
-            }
-
-            function fecharModal() {
-                document.removeEventListener('keydown', fecharComEsc);
-                $("#item-id").select2('close');
-                document.getElementById('meuModal').style.display = 'none';
-            }
-        </script>
-
-        <script>
-            $(document).ready(function () {
-        
-              // Handle select2:select event
-              $("#item-id").on('select2:close', function (e) {
-                // Focus on the next input field when an item is selected
-                $('#texto').focus();
-              });
-            });
-
-            
-          </script>
-
-          <script>
-
-            function formatWord(word) {
-                if (word.length > 10) {
-                    return word.slice(0, 10); // Truncate para os primeiros 10 caracteres
-                } else {
-                    const padding = ' '.repeat(10 - word.length); // Calcula o número de espaços de preenchimento
-                    return word + padding; // Adiciona o preenchimento à palavra
-                }
-            }
-            $(printWindow).onafterprint = function() {
-                printWindow.close(); //
-            };
-            function printText() {
+            function printVenda() {
                 var separa = "--------------------------------------\n"
                 var textToPrint = "Espetaria Monzani\nTel: (18)98803-2917\nEnd: Rua Rui Barbosa, 1150\n";
                 textToPrint += separa;
@@ -100,38 +46,59 @@
                     textToPrint += "Pago:   " + {{mesa.0.valor_recebido}} + "\n";
                 }
                 textToPrint += "Total:   " + {{mesa.0.total_valor}} + "\n";
-                textToPrint += "Obrigado Pela Preferencia!!\nVolte Sempre";
+                calc = {{mesa.0.total_valor}} - {{mesa.0.valor_recebido}}
+                textToPrint += "Restante:   " + calc + "\n  \n";
+                textToPrint += "Obrigado Pela Preferencia!!\nVolte Sempre\n|\n";
                 var printWindow = window.open('', '_blank');
-                printWindow.document.write('<pre class="button-container">' + textToPrint + '</pre>');
+                printWindow.document.write('<pre style="text-align: center;" class="button-container">' + textToPrint + '</pre>');
                 printWindow.print();
                 printWindow.document.close();
                 setTimeout(function() {
                     printWindow.close();
-                }, 500);
-            }
-            </script>
-    
-
-        <script>
-
-            function pagModal() {
-                event.preventDefault();
-                document.getElementById('pagModal').style.display = 'block';
-                document.getElementById('text_quant').focus();
-                document.getElementById('text_quant').select();
-                document.addEventListener('keydown', fecharComEsc);
+                }, 50);
             }
 
-            function fecharComEsc(event) {
-                if (event.keyCode === 27) { // Código da tecla "Esc"
-                    fecharModal();
-                    pagfecharModal();
-                }
-            }
+            function printComanda() {
+                var separa = "--------------------------------------\n"
+                var textToPrint = "Espetaria Monzani\nTel: (18)98803-2917\nEnd: Rua Rui Barbosa, 1150\n";
+                textToPrint += separa;
+                textToPrint += "Mesa " + {{mesa.0.mesa}} + "\n";
 
-            function pagfecharModal() {
-                document.removeEventListener('keydown', fecharComEsc);
-                document.getElementById('pagModal').style.display = 'none';
+                {% for item in vendas %}
+                    {% if item.impresso != item.quantidade %}
+                        calc = {{item.quantidade}} - {{item.impresso}}
+                        textToPrint += calc + "               " + formatWord("{{ item.nome }}") + "\n";  // Supondo que você queira imprimir os campos 'campo1' e 'campo2'
+                    {% endif %}
+                {% endfor %}
+                textToPrint += separa;
+                textToPrint += "Obrigado Pela Preferencia!!\nVolte Sempre\n|\n";
+                var printWindow = window.open('', '_blank');
+                printWindow.document.write('<pre style="text-align: center;" class="button-container">' + textToPrint + '</pre>');
+                printWindow.print();
+                printWindow.document.close();
+                setTimeout(function() {
+                    printWindow.close();
+                }, 1000);
+                fazerRequisicao();
+                setTimeout(function() {
+                    location.reload();  
+                }, 2000);
+            }
+            function fazerRequisicao() {
+                var xhr = new XMLHttpRequest();
+                var csrfToken = xhr.getResponseHeader('x-csrf-token');
+                xhr.open('GET', '/atualiza_bd/?mesa_id={{mesa.0.mesa}}', true);
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        console.log(xhr.responseText);
+                    } else {
+                        console.error('Erro ao fazer a requisição: ' + xhr.status);
+                    }
+                };
+                xhr.onerror = function() {
+                    console.error('Erro de rede ao fazer a requisição.');
+                };
+                xhr.send({'mesa_id' : {{mesa.0.mesa}}});
             }
         </script>
     </head>
@@ -200,7 +167,10 @@
             <button id = "inicial" class="btn btn-primary btn-sm" type="submit">Pagamento (F2)</button>
         </form>
         <div class = "mesa-button">
-        <button class = "btn btn-primary btn-sm" id='imprime'  onclick="printText()">Imprimir Venda(F4)</button>
+            <button class = "btn btn-primary btn-sm" id='imprime'  onclick="printVenda()">Imprimir Venda(F4)</button>
+        </div>
+        <div class = "mesa-button">
+            <button class = "btn btn-primary btn-sm" id='imprime'  onclick="printComanda()">Imprimir Comanda(F6)</button>
         </div>
         <form class = "mesa-button" id = 'form3' method="get" action="{% url 'mesas' %}">
             {% csrf_token %}
@@ -246,7 +216,7 @@
                     </button>
                 </div>
                 <div class="container mt-3">
-                    <form method="  " action="{% url 'atualiza_quantidade' %}">
+                    <form method="post" action="{% url 'atualiza_quantidade' %}">
 
                     <input type="hidden" name = "mesa_id" value="{{ mesa.0.mesa }}"/>
                     {% csrf_token %}
@@ -259,7 +229,7 @@
                     </div>
                     <div class="mb-3">
                         <b>Quantidade</b> 
-                        <input type="text" class="form-control" id="texto" autocomplete="off" placeholder="Digite aqui" name="quantidade" required>
+                        <input type="text" class="form-control" id="texto" autocomplete="off" placeholder="Digite aqui" name="quantidade" value="1" required>
                     </div>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary">Enviar</button>

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Itens, Vendas, Categoria, Mesa
+from django.urls import reverse
 
 def index(request):
     return render(request, 'index.html')
@@ -31,6 +32,15 @@ def itensmesa(request):
         mesa = Mesa.objects.filter(mesa=mesa)
     return render(request, 'itensmesa.html', {'mesa' : mesa, 'itens': Itens.objects.all().order_by('id'), 'vendas' : dados_venda})
 
+def atualiza_bd(request):
+    mesa = request.GET.get('mesa_id')
+    vendas = Vendas.objects.filter(mesa=mesa)
+    for item in vendas:
+        item.impresso = float(str(item.quantidade))
+        item.quantidade = float(str(item.quantidade))
+        item.valor = float(str(item.valor))
+        item.save()
+    return redirect(f'{reverse("mesas")}')
 
 def finalizar_venda(request):
     valor_recebido = request.POST.get('quantidade')
@@ -54,6 +64,8 @@ def atualiza_quantidade(request):
         venda = Vendas.objects.filter(codigo=codigo_item, mesa=mesa)
         venda.update(quantidade=float(str(venda[0].quantidade))+float(quantidade))
         venda.update(valor=float(str(venda[0].quantidade))*float(str(it[0].valor)))
+        if (float(str(venda[0].quantidade)) < float(str(venda[0].impresso))):
+            venda.update(impresso=float(str(venda[0].quantidade)))
         if(float(str(venda[0].quantidade)) == 0):
             venda.delete()
     else:
